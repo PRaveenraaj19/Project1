@@ -1,0 +1,60 @@
+// Retrieve tasks from localStorage or initialize an empty array
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+// DOM elements
+const form = document.getElementById('todo-form');
+const input = document.getElementById('todo-input');
+const taskList = document.getElementById('task-list');
+
+// Function to save tasks to localStorage
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Function to display tasks in the UI
+function displayTasks() {
+    taskList.innerHTML = '';
+    tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span class="${task.completed ? 'completed' : ''}">${task.title}</span>
+            <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+            <button class="toggle-btn" onclick="toggleTask(${index})">${task.completed ? 'Undo' : 'Complete'}</button>
+        `;
+        taskList.appendChild(li);
+    });
+}
+
+// Function to add a new task
+function addTask(title) {
+    tasks.push({ title, completed: false });
+    saveTasks();
+    displayTasks();
+}
+
+// Function to delete a task
+function deleteTask(index) {
+    tasks.splice(index, 1);
+    saveTasks();
+    displayTasks();
+}
+
+// Function to toggle task completion
+function toggleTask(index) {
+    tasks[index].completed = !tasks[index].completed;
+    saveTasks();
+    displayTasks();
+}
+
+// Event listener for form submission
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const taskTitle = input.value.trim();
+    if (taskTitle !== '') {
+        addTask(taskTitle);
+        input.value = '';
+    }
+});
+
+// Initial display of tasks
+displayTasks();
